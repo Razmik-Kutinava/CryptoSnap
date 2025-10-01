@@ -14,9 +14,13 @@ export default async function handler(req, res) {
   const BOT_TOKEN = process.env.TOKEN || '8485812370:AAGVm0q_CCzcS6HflE4uc8AFXbRt0ECEFIM';
   const WEB_APP_URL = process.env.WEBAPP_URL || 'https://crypto-snap-lilac.vercel.app';
 
+  console.log('Bot API called:', req.method, req.url);
+
   if (req.method === 'POST') {
     // Webhook для Telegram
     try {
+      console.log('Received webhook:', JSON.stringify(req.body, null, 2));
+      
       const { message } = req.body;
       
       if (message && message.text === '/start') {
@@ -36,7 +40,7 @@ export default async function handler(req, res) {
           ]]
         };
 
-        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const telegramResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -46,21 +50,27 @@ export default async function handler(req, res) {
           })
         });
 
-        if (response.ok) {
+        const telegramResult = await telegramResponse.json();
+        console.log('Telegram response:', telegramResult);
+
+        if (telegramResponse.ok) {
           console.log(`✅ Сообщение отправлено пользователю ${userName}`);
+        } else {
+          console.error('❌ Ошибка отправки в Telegram:', telegramResult);
         }
       }
 
       res.status(200).json({ ok: true });
     } catch (error) {
       console.error('❌ Ошибка webhook:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   } else if (req.method === 'GET') {
     // Информация о боте
     res.status(200).json({
       status: 'Bot is running',
       webAppUrl: WEB_APP_URL,
+      botToken: BOT_TOKEN ? 'Set' : 'Not set',
       timestamp: new Date().toISOString()
     });
   } else {

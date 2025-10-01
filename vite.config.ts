@@ -19,5 +19,6 @@ export default defineConfig({
     target: 'esnext',
     outDir: 'dist',
     assetsDir: 'assets'
-  }
+  },
+  publicDir: 'public'
 });
