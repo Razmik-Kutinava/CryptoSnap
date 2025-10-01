@@ -8,7 +8,7 @@ dotenv.config();
 const token = process.env.TOKEN || '8485812370:AAGVm0q_CCzcS6HflE4uc8AFXbRt0ECEFIM';
 
 // URL будет обновлен автоматически из переменной окружения или ngrok
-const webAppUrl = process.env.WEBAPP_URL || 'https://scutiform-pushed-malorie.ngrok-free.dev';
+const webAppUrl = process.env.WEBAPP_URL || 'https://crypto-snap-lilac.vercel.app';
 
 // Создаем экземпляр бота
 const bot = new TelegramBot(token, {polling: true});
