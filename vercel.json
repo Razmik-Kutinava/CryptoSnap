@@ -10,10 +10,10 @@
     }
   ],
   "functions": {
-    "api/bot.js": {
+    "api/bot.mjs": {
       "runtime": "nodejs18.x"
     },
-    "api/setup-webhook.js": {
+    "api/setup-webhook.mjs": {
       "runtime": "nodejs18.x"
     }
   }

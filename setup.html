@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Быстрая настройка бота</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .btn { background: #2481cc; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .result { padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🤖 Быстрая настройка Telegram Bot</h1>
+    
+    <div class="info">
+        <strong>Токен:</strong> 8485812370:AAGVm0q_CCzcS6HflE4uc8AFXbRt0ECEFIM<br>
+        <strong>URL:</strong> https://crypto-snap-lilac.vercel.app
+    </div>
+
+    <button class="btn" onclick="setupWebhook()">⚙️ Настроить Webhook</button>
+    <button class="btn" onclick="checkWebhook()">📡 Проверить Webhook</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const BOT_TOKEN = '8485812370:AAGVm0q_CCzcS6HflE4uc8AFXbRt0ECEFIM';
+        const WEBHOOK_URL = 'https://crypto-snap-lilac.vercel.app/api/bot';
+
+        async function setupWebhook() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div class="info">🔄 Настройка webhook...</div>';
+            
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: WEBHOOK_URL,
+                        allowed_updates: ['message']
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok) {
+                    result.innerHTML = `<div class="success">✅ Webhook установлен!<br>URL: ${WEBHOOK_URL}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ Ошибка: ${data.description}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Ошибка: ${error.message}</div>`;
+            }
+        }
+
+        async function checkWebhook() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div class="info">🔄 Проверка webhook...</div>';
+            
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getWebhookInfo`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    const info = data.result;
+                    result.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Информация о Webhook:</strong><br>
+                            URL: ${info.url || 'Не установлен'}<br>
+                            Ожидающих обновлений: ${info.pending_update_count}<br>
+                            Последняя ошибка: ${info.last_error_message || 'Нет'}<br>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `<div class="error">❌ Ошибка: ${data.description}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Ошибка: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
