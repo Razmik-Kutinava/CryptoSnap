@@ -14,9 +14,10 @@ export default defineConfig({
       '.ngrok.io'
     ]
   },
-  base: '/',
+  base: './',
   build: {
     target: 'esnext',
-    outDir: 'dist'
+    outDir: 'dist',
+    assetsDir: 'assets'
   }
 });
