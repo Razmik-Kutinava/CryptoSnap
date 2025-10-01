@@ -1,5 +1,4 @@
-// Vercel Serverless Function для Telegram Bot
-export default async function handler(req, res) {
+export default function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -7,8 +6,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   const BOT_TOKEN = process.env.TOKEN || '8485812370:AAGVm0q_CCzcS6HflE4uc8AFXbRt0ECEFIM';
@@ -18,62 +16,53 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     // Webhook для Telegram
-    try {
-      console.log('Received webhook:', JSON.stringify(req.body, null, 2));
-      
-      const { message } = req.body;
-      
-      if (message && message.text === '/start') {
-        const chatId = message.chat.id;
-        const userId = message.from.id;
-        const userName = message.from.first_name || 'Пользователь';
+    const { message } = req.body || {};
+    
+    if (message && message.text === '/start') {
+      const chatId = message.chat.id;
+      const userId = message.from.id;
+      const userName = message.from.first_name || 'Пользователь';
 
-        console.log(`💬 Пользователь ${userName} (${userId}) запустил бота`);
+      console.log(`💬 Пользователь ${userName} (${userId}) запустил бота`);
 
-        // Отправляем ответ с кнопкой Mini App
-        const replyMarkup = {
-          inline_keyboard: [[
-            {
-              text: '🚀 Открыть Крипто Табло',
-              web_app: { url: WEB_APP_URL }
-            }
-          ]]
-        };
+      // Отправляем ответ с кнопкой Mini App
+      const replyMarkup = {
+        inline_keyboard: [[
+          {
+            text: '🚀 Открыть Крипто Табло',
+            web_app: { url: WEB_APP_URL }
+          }
+        ]]
+      };
 
-        const telegramResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: `🎉 Добро пожаловать в Крипто Табло!\n\n📊 Актуальные цены криптовалют\n💱 Конвертор валют\n📈 Данные в реальном времени\n\nНажмите кнопку ниже, чтобы открыть приложение:`,
-            reply_markup: replyMarkup
-          })
-        });
-
-        const telegramResult = await telegramResponse.json();
-        console.log('Telegram response:', telegramResult);
-
-        if (telegramResponse.ok) {
-          console.log(`✅ Сообщение отправлено пользователю ${userName}`);
-        } else {
-          console.error('❌ Ошибка отправки в Telegram:', telegramResult);
-        }
-      }
-
-      res.status(200).json({ ok: true });
-    } catch (error) {
-      console.error('❌ Ошибка webhook:', error);
-      res.status(500).json({ error: 'Internal server error', details: error.message });
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: `🎉 Добро пожаловать в Крипто Табло!\n\n📊 Актуальные цены криптовалют\n💱 Конвертор валют\n📈 Данные в реальном времени\n\nНажмите кнопку ниже, чтобы открыть приложение:`,
+          reply_markup: replyMarkup
+        })
+      }).then(response => response.json()).then(result => {
+        console.log('Telegram response:', result);
+      }).catch(error => {
+        console.error('❌ Ошибка отправки в Telegram:', error);
+      });
     }
-  } else if (req.method === 'GET') {
-    // Информация о боте
-    res.status(200).json({
+
+    return res.status(200).json({ ok: true });
+  } 
+  
+  if (req.method === 'GET') {
+    return res.status(200).json({
       status: 'Bot is running',
       webAppUrl: WEB_APP_URL,
       botToken: BOT_TOKEN ? 'Set' : 'Not set',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      url: req.url
     });
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
   }
+  
+  return res.status(405).json({ error: 'Method not allowed' });
 }

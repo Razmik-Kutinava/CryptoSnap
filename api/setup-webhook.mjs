@@ -1,25 +1,22 @@
-// Настройка webhook для Telegram Bot
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const BOT_TOKEN = process.env.TOKEN || '8485812370:AAGVm0q_CCzcS6HflE4uc8AFXbRt0ECEFIM';
-  const WEBHOOK_URL = `${process.env.WEBAPP_URL || 'https://crypto-snap-lilac.vercel.app'}/api/bot`;
+  const WEBHOOK_URL = `https://crypto-snap-lilac.vercel.app/api/bot`;
 
-  try {
-    // Устанавливаем webhook
-    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        url: WEBHOOK_URL,
-        allowed_updates: ['message']
-      })
-    });
-
-    const result = await response.json();
-
+  // Устанавливаем webhook
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      url: WEBHOOK_URL,
+      allowed_updates: ['message']
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
     if (result.ok) {
       console.log('✅ Webhook установлен:', WEBHOOK_URL);
       res.status(200).json({
@@ -35,11 +32,12 @@ export default async function handler(req, res) {
         error: result.description || 'Ошибка установки webhook'
       });
     }
-  } catch (error) {
+  })
+  .catch(error => {
     console.error('❌ Ошибка:', error);
     res.status(500).json({
       success: false,
       error: 'Внутренняя ошибка сервера'
     });
-  }
+  });
 }

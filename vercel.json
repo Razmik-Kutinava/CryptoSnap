@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
@@ -10,10 +11,7 @@
     }
   ],
   "functions": {
-    "api/bot.mjs": {
-      "runtime": "nodejs18.x"
-    },
-    "api/setup-webhook.mjs": {
+    "api/**/*.mjs": {
       "runtime": "nodejs18.x"
     }
   }
