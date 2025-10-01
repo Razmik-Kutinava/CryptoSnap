@@ -1,0 +1,27 @@
+{
+  "name": "crypto-mini-app",
+  "version": "1.0.0",
+  "description": "Крипто табло для Telegram Mini App на SolidJS",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "bot": "node bot/bot.js",
+    "ngrok": "ngrok http 3003"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.5.9",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9",
+    "vite-plugin-solid": "^2.7.0"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.8.2",
+    "dotenv": "^17.2.3",
+    "node-telegram-bot-api": "^0.64.0",
+    "solid-js": "^1.7.8"
+  }
+}
