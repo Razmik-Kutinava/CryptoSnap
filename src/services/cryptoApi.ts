@@ -25,6 +25,7 @@ export interface CryptoCurrency {
 }
 
 const BASE_URL = 'https://api.coinpaprika.com/v1';
+const API_BASE_URL = '/api'; // Используем локальные API endpoints
 
 export class CryptoApiService {
   // Получить топ криптовалют
@@ -101,6 +102,78 @@ export class CryptoApiService {
     return result;
   }
 
+  // Получить топ криптовалют через локальный API
+  static async getTopCryptosLocal(limit: number = 10): Promise<CryptoCurrency[]> {
+    try {
+      console.log(`🔄 Запрашиваем топ-${limit} криптовалют через локальный API...`);
+      
+      const response = await fetch(`${API_BASE_URL}/crypto?limit=${limit}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Ошибка API');
+      }
+      
+      console.log(`✅ Получено ${result.data.length} криптовалют через локальный API`);
+      
+      return result.data.map((coin: any) => ({
+        id: coin.id,
+        name: coin.name,
+        symbol: coin.symbol,
+        price: coin.price,
+        change24h: (coin.price * coin.change24h) / 100,
+        changePercent24h: coin.change24h,
+        marketCap: coin.marketCap,
+        volume24h: coin.volume24h
+      }));
+    } catch (error) {
+      console.error('❌ Ошибка загрузки через локальный API:', error);
+      // Fallback к прямому API
+      return this.getTopCryptos(limit);
+    }
+  }
+
+  // Получить конкретную криптовалюту через локальный API
+  static async getCryptoLocal(coinId: string): Promise<CryptoCurrency> {
+    try {
+      console.log(`🔄 Запрашиваем данные для ${coinId} через локальный API...`);
+      
+      const response = await fetch(`${API_BASE_URL}/crypto?symbol=${coinId}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Ошибка API');
+      }
+      
+      console.log(`✅ Получены данные для ${result.data.name}: $${result.data.price.toFixed(2)}`);
+      
+      return {
+        id: result.data.id,
+        name: result.data.name,
+        symbol: result.data.symbol,
+        price: result.data.price,
+        change24h: (result.data.price * result.data.change24h) / 100,
+        changePercent24h: result.data.change24h,
+        marketCap: result.data.marketCap,
+        volume24h: result.data.volume24h
+      };
+    } catch (error) {
+      console.error(`❌ Ошибка загрузки ${coinId} через локальный API:`, error);
+      // Fallback к прямому API
+      return this.getCrypto(coinId);
+    }
+  }
+
   // Тестовый метод для проверки API
   static async testApi(): Promise<boolean> {
     try {
@@ -128,6 +201,28 @@ export class CryptoApiService {
       }
     } catch (error) {
       console.error('❌ Ошибка тестирования API:', error);
+      return false;
+    }
+  }
+
+  // Тестовый метод для проверки локального API
+  static async testLocalApi(): Promise<boolean> {
+    try {
+      console.log('🧪 Тестируем локальный API...');
+      
+      const response = await fetch(`${API_BASE_URL}/test`);
+      
+      if (!response.ok) {
+        console.error(`❌ Локальный API тест провален: HTTP ${response.status}`);
+        return false;
+      }
+      
+      const data = await response.json();
+      
+      console.log('✅ Локальный API тест успешен!', data);
+      return true;
+    } catch (error) {
+      console.error('❌ Ошибка тестирования локального API:', error);
       return false;
     }
   }

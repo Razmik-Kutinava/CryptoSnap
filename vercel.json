@@ -11,8 +11,11 @@
     }
   ],
   "functions": {
-    "api/**/*.mjs": {
+    "api/**/*.js": {
       "runtime": "nodejs18.x"
     }
+  },
+  "env": {
+    "TOKEN": "@telegram_bot_token"
   }
 }

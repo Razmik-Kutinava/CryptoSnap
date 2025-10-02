@@ -9,6 +9,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "bot": "node bot/bot.js",
+    "bot:simple": "node simple-bot.js",
+    "setup:webhook": "node setup-webhook.js",
+    "test:api": "node test-api.js",
     "ngrok": "ngrok http 3003"
   },
   "license": "MIT",
@@ -21,6 +24,7 @@
   "dependencies": {
     "@solidjs/router": "^0.8.2",
     "dotenv": "^17.2.3",
+    "node-fetch": "^3.3.2",
     "node-telegram-bot-api": "^0.64.0",
     "solid-js": "^1.7.8"
   }

@@ -1,5 +1,5 @@
 // Vercel Serverless Function для тестирования
-module.exports = (req, res) => {
+export default function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -13,6 +13,8 @@ module.exports = (req, res) => {
     message: 'TEST API работает!',
     timestamp: new Date().toISOString(),
     method: req.method,
-    url: req.url
+    url: req.url,
+    bot: 'Бот настроен и готов к работе!',
+    crypto: 'API криптовалют доступно'
   });
-};
+}
